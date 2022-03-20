@@ -10,11 +10,20 @@ IMAGE_REPO="me"
 
 run:build (){
   run:build:debian-interactive
+  run:build:debian-nix
 }
 
 run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
   docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "${IMAGE_REPO}/debiani" .
+}
+
+run:build:debian-nix () {
+  cd "$rundir"/debian-nix
+  docker build -t "${IMAGE_REPO}/debian-nix:11" .
+}
+run:docker(){
+  docker run -ti --name "${CONTAINER_NAME}" "${IMAGE_REPO}:${IMAGE_TAG}"
 }
 
 run:docker () {
