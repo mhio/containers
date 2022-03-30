@@ -11,17 +11,22 @@ IMAGE_REPO="me"
 run:build (){
   run:build:debian-interactive
   run:build:debian-nix
+  run:build:debian-zsh
 }
 
 run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
-  docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "${IMAGE_REPO}/debiani" .
+  docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "mdebi" .
 }
-
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
-  docker build -t "${IMAGE_REPO}/debian-nix:11" .
+  docker build -t "${IMAGE_REPO}/debian-nix:11" -t "mdebn" .
 }
+run:build:debian-zsh () {
+  cd "$rundir"/debian-zsh
+  docker build -t "${IMAGE_REPO}/debian-zsh:11" -t "mdebz" .
+}
+
 run:docker(){
   docker run -ti --name "${CONTAINER_NAME}" "${IMAGE_REPO}:${IMAGE_TAG}"
 }
