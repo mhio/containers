@@ -11,8 +11,6 @@ USER nix
 WORKDIR /home/nix
 RUN set -uex; \
     /tmp/nix-2.7.0-x86_64-linux/install --no-daemon;\
-   echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.bashrc;\
-   echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.zshrc;
+    echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.bashrc;
 
-CMD [ "zsh" ]
 

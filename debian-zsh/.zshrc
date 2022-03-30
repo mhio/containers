@@ -14,5 +14,6 @@ setopt prompt_subst
 #zstyle ':vcs_info:*' formats ' %s|%F{red}%b%f' # git(main)
 NEWLINE=$'\n'
 setopt prompt_subst
-PROMPT='${NEWLINE}# 20%D %T %F{green}%n%f@%F{blue}%m%f:%d ${NEWLINE}#${vcs_info_msg_0_}%F{yellow}%#%f '
+#PROMPT='${NEWLINE}# 20%D %T %F{green}%n%f@%F{blue}%m%f:%d ${NEWLINE}#${vcs_info_msg_0_}%F{yellow}%#%f '
+PROMPT='${NEWLINE}# 20%D %T %F{green}%n%f@%F{blue}%m%f:%d ${NEWLINE}#C%F{yellow}%#%f '
 
