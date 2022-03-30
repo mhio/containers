@@ -15,6 +15,7 @@ run:build (){
 }
 
 run:build:debian-interactive(){
+  docker pull debian:11
   cd "$rundir"/debian-interactive
   docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "mdebi" .
 }
