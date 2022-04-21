@@ -1,5 +1,11 @@
 # Containers
 
-debian interactive
+```
+debian interactive - mdebi
+ zsh - mdebz
+ nix - mdebn
+```
 
-nix shell
+```
+./make.sh build
+```
