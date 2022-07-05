@@ -12,20 +12,25 @@ run:build (){
   run:build:debian-interactive
   run:build:debian-nix
   run:build:debian-zsh
+  run:build:debian-deno
 }
 
 run:build:debian-interactive(){
   docker pull debian:11
   cd "$rundir"/debian-interactive
-  docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "mdebi" .
+  docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "${IMAGE_REPO}/debian-interactive:latest" -t "mdebi" .
 }
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
-  docker build -t "${IMAGE_REPO}/debian-nix:11" -t "mdebn" .
+  docker build -t "${IMAGE_REPO}/debian-nix:11" -t "${IMAGE_REPO}/debian-nix:latest" -t "mdebn" .
 }
 run:build:debian-zsh () {
   cd "$rundir"/debian-zsh
-  docker build -t "${IMAGE_REPO}/debian-zsh:11" -t "mdebz" .
+  docker build -t "${IMAGE_REPO}/debian-zsh:11" -t "${IMAGE_REPO}/debian-zsh:latest" -t "mdebz" .
+}
+run:build:debian-deno () {
+  cd "$rundir"/debian-deno
+  docker build -t "${IMAGE_REPO}/debian-deno:11" -t "${IMAGE_REPO}/debian-deno:latest" -t "mdebd" .
 }
 
 run:docker(){
