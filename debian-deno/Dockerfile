@@ -4,7 +4,7 @@ RUN set -uex;\
     apt-get update;\
     apt-get -y install curl unzip;\ 
     apt-get clean;
-RUN curl -sfLl https://github.com/denoland/deno/releases/download/v1.23.2/deno-x86_64-unknown-linux-gnu.zip > /deno-x86_64-unknown-linux-gnu.zip
+RUN curl -sfLl https://github.com/denoland/deno/releases/download/v1.24.1/deno-x86_64-unknown-linux-gnu.zip > /deno-x86_64-unknown-linux-gnu.zip
 RUN set -uex;\
     unzip /deno-x86_64-unknown-linux-gnu.zip;\
     chmod 755 /deno;\
