@@ -9,14 +9,19 @@ cd "$rundir"
 IMAGE_REPO="me"
 
 run:build (){
+  run:build:debian-base
   run:build:debian-interactive
   run:build:debian-nix
   run:build:debian-zsh
   run:build:debian-deno
 }
 
-run:build:debian-interactive(){
+run:build:debian-base(){
   docker pull debian:11
+  cd "$rundir"/debian-base
+  docker build -t "${IMAGE_REPO}/debian-base:11" -t "${IMAGE_REPO}/debian-base:latest" -t "${IMAGE_REPO}/debian:latest" -t "mdeb" .
+}
+run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
   docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "${IMAGE_REPO}/debian-interactive:latest" -t "mdebi" .
 }
