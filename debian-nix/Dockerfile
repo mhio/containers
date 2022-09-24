@@ -1,4 +1,4 @@
-FROM me/debian-interactive:11
+FROM me/debian-base:11
 ARG NIX_VERSION=2.11.1
 ARG NIX_VERSION_SHA=c6d48479d50a01cdfc3669440776692ca7094ff29028b1fec6da0abeead16a01
 RUN set -uex; \
@@ -17,6 +17,10 @@ RUN set -uex; \
     /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;\
     echo 'if [ -e /home/nix/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nix/.nix-profile/etc/profile.d/nix.sh; fi' >> ~/.bashrc;
 RUN set -uex;\
+    mkdir -p ~/.config/nix/;\
+    touch ~/.config/nix/nix.conf;\
     . /home/nix/.nix-profile/etc/profile.d/nix.sh;\
-    nix-shell -p curl -p jq
+    nix-shell -p curl -p jq;
 
+#nix-channel --list
+#echo 'binary-caches = http://acng/HTTPS///cache.nixos.org/' > ~/.config/nix/nix.conf;\
