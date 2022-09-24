@@ -43,16 +43,20 @@ run:run:debian-base(){
   shift
   docker run --interactive --tty --rm "${IMAGE_REPO}/debian-${type_name}:latest" "$@"
 }
-run:run:debian-interactive(){
+
+run:debian(){
   run:run:debian-base interactive "$@"
 }
-run:run:debian-nix(){
+
+run:nix(){
   run:run:debian-base nix "$@"
 }
-run:run:debian-zsh(){
+
+run:zsh(){
   run:run:debian-base zsh "$@"
 }
-run:run:debian-deno(){
+
+run:deno(){
   run:run:debian-base deno "$@"
 }
 
