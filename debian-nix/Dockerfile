@@ -1,6 +1,6 @@
 FROM me/debian-interactive:11
-ARG NIX_VERSION=2.9.2
-ARG NIX_VERSION_SHA=e5fd4e993bc6c565aa0544eec2db6a977e496896f4133002436b1be1d3e9a8f6
+ARG NIX_VERSION=2.11.1
+ARG NIX_VERSION_SHA=c6d48479d50a01cdfc3669440776692ca7094ff29028b1fec6da0abeead16a01
 RUN set -uex; \
     groupadd nixbld;\
     useradd nix --create-home --home-dir /home/nix --groups nixbld;\
@@ -14,7 +14,7 @@ ENV USER=nix
 USER nix
 WORKDIR /home/nix
 RUN set -uex; \
-    /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;\
-    echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.bashrc;
+    /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;
+#    echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.bashrc;
 
 
