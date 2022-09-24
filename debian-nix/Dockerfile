@@ -16,5 +16,7 @@ WORKDIR /home/nix
 RUN set -uex; \
     /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;\
     echo 'if [ -e /home/nix/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nix/.nix-profile/etc/profile.d/nix.sh; fi' >> ~/.bashrc;
-
+RUN set -uex;\
+    . /home/nix/.nix-profile/etc/profile.d/nix.sh;\
+    nix-shell -p curl -p jq
 
