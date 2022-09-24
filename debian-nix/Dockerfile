@@ -14,7 +14,7 @@ ENV USER=nix
 USER nix
 WORKDIR /home/nix
 RUN set -uex; \
-    /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;
-#    echo '[ -f ~/.profile ] && . ~/.profile' >> /home/nix/.bashrc;
+    /tmp/nix-${NIX_VERSION}-x86_64-linux/install --no-daemon;\
+    echo 'if [ -e /home/nix/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nix/.nix-profile/etc/profile.d/nix.sh; fi' >> ~/.bashrc;
 
 
