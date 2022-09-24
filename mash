@@ -38,8 +38,22 @@ run:build:debian-deno () {
   docker build -t "${IMAGE_REPO}/debian-deno:11" -t "${IMAGE_REPO}/debian-deno:latest" -t "mdebd" .
 }
 
-run:docker(){
-  docker run -ti --name "${CONTAINER_NAME}" "${IMAGE_REPO}:${IMAGE_TAG}"
+run:run:debian-base(){
+  local type_name="$1"
+  shift
+  docker run --interactive --tty --rm "${IMAGE_REPO}/debian-${type_name}:latest" "$@"
+}
+run:run:debian-interactive(){
+  run:run:debian-base interactive "$@"
+}
+run:run:debian-nix(){
+  run:run:debian-base nix "$@"
+}
+run:run:debian-zsh(){
+  run:run:debian-base zsh "$@"
+}
+run:run:debian-deno(){
+  run:run:debian-base deno "$@"
 }
 
 run:docker () {
