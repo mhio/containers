@@ -11,5 +11,5 @@ RUN set -uex;\
 
 FROM docker.io/debian:11-slim
 COPY --from=install /deno /deno
-RUN /deno repl 'exit()'
+RUN /deno repl --eval 'close()'
 CMD /deno repl
