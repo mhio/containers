@@ -4,6 +4,7 @@ dateTime(){ date -u '+%Y-%m-%dT%H:%M:%SZ'; }
 rundir=$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")
 cd "$rundir"
 
+
 # {make.sh user}
 
 IMAGE_REPO="me"
@@ -77,6 +78,11 @@ run:docker () {
    "${IMAGE_REPO}:${IMAGE_TAG}" \
    "$@"
 }
+
+run:check:from(){
+  grep FROM */Dockerfile
+}
+
 
 # {make.sh common}
 run:completion:words(){
