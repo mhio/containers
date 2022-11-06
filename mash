@@ -41,6 +41,7 @@ run:build:debian-deno () {
 }
 run:build:debian-node () {
   cd "$rundir"/debian-node
+  # set --build-arg NODE_VERSION="18.x.x"
   docker build -t "${IMAGE_REPO}/debian-node:18" -t "${IMAGE_REPO}/debian-node:latest" -t "mdebn" .
   docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
 }
