@@ -14,6 +14,7 @@ run:build (){
   run:build:debian-nix "$@"
   run:build:debian-zsh "$@"
   run:build:debian-deno "$@"
+  run:build:debian-node "$@"
 }
 
 run:build:debian-base(){
@@ -28,7 +29,7 @@ run:build:debian-interactive(){
 }
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
-  docker build -t "${IMAGE_REPO}/debian-nix:11" -t "${IMAGE_REPO}/debian-nix:latest" -t "mdebn" .
+  docker build -t "${IMAGE_REPO}/debian-nix:11" -t "${IMAGE_REPO}/debian-nix:latest" -t "mdebnix" .
 }
 run:build:debian-zsh () {
   cd "$rundir"/debian-zsh
@@ -38,7 +39,11 @@ run:build:debian-deno () {
   cd "$rundir"/debian-deno
   docker build -t "${IMAGE_REPO}/debian-deno:11" -t "${IMAGE_REPO}/debian-deno:latest" -t "mdebd" .
 }
-
+run:build:debian-node () {
+  cd "$rundir"/debian-node
+  docker build -t "${IMAGE_REPO}/debian-node:18" -t "${IMAGE_REPO}/debian-node:latest" -t "mdebn" .
+  docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
+}
 run:run:debian-base(){
   local type_name="$1"
   shift
