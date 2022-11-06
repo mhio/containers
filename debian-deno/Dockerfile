@@ -9,7 +9,8 @@ RUN set -uex;\
     chmod 755 /deno;\
     chown -R root:root /deno;
 
-FROM docker.io/debian:11-slim
+FROM gcr.io/distroless/cc-debian11:latest
 COPY --from=install /deno /deno
-RUN /deno repl --eval 'close()'
-CMD /deno repl
+RUN [ "/deno", "repl", "--eval", "close()" ]
+ENTRYPOINT [ "/deno" ]
+CMD [ "repl" ]

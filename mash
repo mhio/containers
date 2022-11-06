@@ -18,7 +18,8 @@ run:build (){
 }
 
 run:build:debian-base(){
-  docker pull debian:11
+  docker pull gcr.io/distroless/cc-debian11:latest
+  docker pull docker.io/debian:11
   cd "$rundir"/debian-base
   docker build -t "${IMAGE_REPO}/debian-base:11" -t "${IMAGE_REPO}/debian-base:latest" -t "${IMAGE_REPO}/debian:latest" -t "mdeb" . "$@"    
 }
