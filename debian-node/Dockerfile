@@ -16,5 +16,4 @@ RUN set -uex; \
 
 FROM gcr.io/distroless/cc-debian11:latest
 COPY --from=install "/build/node" /usr/local
-RUN [ "/usr/local/bin/node", "--eval", "'process.exit(0)'" ]
 ENTRYPOINT [ "/usr/local/bin/node" ]
