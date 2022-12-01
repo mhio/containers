@@ -9,6 +9,9 @@ cd "$rundir"
 
 IMAGE_REPO="me"
 
+NTFY_VERSION="1.29.1"
+NUSHELL_VERSION="0.71.0"
+
 run:build (){
   run:build:debian-base "$@"    
   run:build:debian-interactive "$@"
@@ -16,6 +19,8 @@ run:build (){
   run:build:debian-zsh "$@"
   run:build:debian-deno "$@"
   run:build:debian-node "$@"
+  run:build:debian-ntfy "$@"
+  run:build:debian-nushell "$@"
 }
 
 run:build:debian-base(){
@@ -46,6 +51,14 @@ run:build:debian-node () {
   # set --build-arg NODE_VERSION="18.x.x"
   docker build -t "${IMAGE_REPO}/debian-node:18" -t "${IMAGE_REPO}/debian-node:latest" -t "mdebn" .
   docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
+}
+run:build:debian-ntfy () {
+  cd "$rundir"/debian-ntfy
+  docker build -t "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" --build-arg "NTFY_VERSION=${NTFY_VERSION}" . "$@"
+}
+run:build:debian-nushell () {
+  cd "$rundir"/debian-nushell
+  docker build -t "${IMAGE_REPO}/nushell:${NTFY_VERSION}" --build-arg "NUSHELL_VERSION=${NUSHELL_VERSION}" . "$@"
 }
 run:run:debian-base(){
   local type_name="$1"
