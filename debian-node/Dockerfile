@@ -1,6 +1,6 @@
 FROM me/debian-base:11 AS install
 
-ARG NODE_VERSION=18.12.1
+ARG NODE_VERSION=18.13.0
 WORKDIR /build
 RUN set -uex;\
     file="node-v${NODE_VERSION}-linux-x64.tar.xz"; \
