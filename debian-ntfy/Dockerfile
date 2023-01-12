@@ -8,8 +8,9 @@ RUN set -uex; \
     tar zxvf "${file_name}"; \
     mv "${file_label}" "ntfy";
 
-#FROM docker.io/debian:11
-FROM gcr.io/distroless/cc-debian11:latest
+FROM docker.io/debian:11
+#FROM gcr.io/distroless/cc-debian11:latest
 COPY --from=install /install/ntfy/ntfy /usr/bin/ntfy
-COPY --from=install /install/ntfy/server /etc/ntfy
+COPY --from=install --chown=1009 --chmod=0400 /install/ntfy/server /etc/ntfy
+USER 1009
 CMD [ "ntfy", "serve" ]
