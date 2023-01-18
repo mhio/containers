@@ -9,6 +9,7 @@ cd "$rundir"
 
 IMAGE_REPO="me"
 
+DENO_VERSION="1.29.4"
 NTFY_VERSION="1.29.1"
 NUSHELL_VERSION="0.71.0"
 
@@ -44,7 +45,12 @@ run:build:debian-zsh () {
 }
 run:build:debian-deno () {
   cd "$rundir"/debian-deno
-  docker build -t "${IMAGE_REPO}/debian-deno:11" -t "${IMAGE_REPO}/debian-deno:latest" -t "mdebd" .
+  docker build \
+   --build-arg "DENO_VERSION=${DENO_VERSION}" \
+   --tag "${IMAGE_REPO}/debian-deno:11" \
+   --tag "${IMAGE_REPO}/debian-deno:latest" \
+   --tag "mdebd" \
+   .
 }
 run:build:debian-node () {
   cd "$rundir"/debian-node
