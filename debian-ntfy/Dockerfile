@@ -13,4 +13,4 @@ FROM docker.io/debian:11
 COPY --from=install /install/ntfy/ntfy /usr/bin/ntfy
 COPY --from=install --chown=1009 --chmod=0400 /install/ntfy/server /etc/ntfy
 USER 1009
-CMD [ "ntfy", "serve" ]
+CMD [ "/usr/bin/ntfy", "serve" ]
