@@ -9,21 +9,22 @@ cd "$rundir"
 
 IMAGE_REPO="me"
 
-DENO_VERSION="1.32.3"
-NTFY_VERSION="2.3.1"
-NUSHELL_VERSION="0.78.0"
-NIX_VERSION="2.14.1"
-NIX_VERSION_SHA="2fbe249d8e42a48eec78db2d2eb626655021c5f091f985e82e2d32d14160e890"
+NODE_VERSION="18.16.0"
+DENO_VERSION="1.33.4"
+NTFY_VERSION="2.5.0"
+NUSHELL_VERSION="0.80.0"
+NIX_VERSION="2.15.0"
+NIX_VERSION_SHA="1bdf98f951ce82ad1a12b9e6874f5858cb2aa2e402907e8c3079d8482cb8430b"
 
 run:build (){
   run:build:debian-base "$@"    
   run:build:debian-interactive "$@"
-  run:build:debian-nix "$@"
   run:build:debian-zsh "$@"
   run:build:debian-deno "$@"
   run:build:debian-node "$@"
   run:build:debian-ntfy "$@"
   run:build:debian-nushell "$@"
+  run:build:debian-nix "$@"
 }
 
 run:build:debian-base(){
@@ -60,9 +61,12 @@ run:build:debian-deno () {
 }
 run:build:debian-node () {
   cd "$rundir"/debian-node
-  # set --build-arg NODE_VERSION="18.x.x"
-  docker build -t "${IMAGE_REPO}/debian-node:18" -t "${IMAGE_REPO}/debian-node:latest" .
-  docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
+  docker build \
+   --build-arg NODE_VERSION="${NODE_VERSION}" \
+   --tag "${IMAGE_REPO}/debian-node:18" \
+   --tag "${IMAGE_REPO}/debian-node:latest" \
+   .
+  #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
 }
 run:build:debian-ntfy () {
   cd "$rundir"/debian-ntfy
