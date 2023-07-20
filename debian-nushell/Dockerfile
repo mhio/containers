@@ -1,4 +1,4 @@
-FROM me/debian-base:11 AS install
+FROM me/debian-base:12 AS install
 WORKDIR /install
 ARG NUSHELL_VERSION
 RUN set -uex; \
@@ -9,7 +9,7 @@ RUN set -uex; \
     mv "${file_label}" "nushell"; \
     cat /install/nushell/README.txt;
 
-FROM me/debian-interactive:11
+FROM me/debian-interactive:12
 COPY --from=install /install/nushell/nu /usr/bin/nu
 COPY 0.71/config.nu 0.71/env.nu /root/.config/nushell/
 ENTRYPOINT [ "/usr/bin/nu" ]

@@ -9,12 +9,12 @@ cd "$rundir"
 
 IMAGE_REPO="me"
 
-NODE_VERSION="18.16.0"
-DENO_VERSION="1.33.4"
-NTFY_VERSION="2.5.0"
-NUSHELL_VERSION="0.80.0"
-NIX_VERSION="2.15.0"
-NIX_VERSION_SHA="1bdf98f951ce82ad1a12b9e6874f5858cb2aa2e402907e8c3079d8482cb8430b"
+NODE_VERSION="18.16.1"
+DENO_VERSION="1.35.1"
+NTFY_VERSION="2.6.2"
+NUSHELL_VERSION="0.82.0"
+NIX_VERSION="2.16.1"
+NIX_VERSION_SHA="c5b55a36129a106a53f21a8aa0c51807e020521b3e268e597f1efb3ce81e2722"
 
 run:build (){
   run:build:debian-base "$@"    
@@ -30,26 +30,27 @@ run:build (){
 run:build:debian-base(){
   docker pull gcr.io/distroless/cc-debian11:latest
   docker pull docker.io/debian:11
+  docker pull docker.io/debian:12
   cd "$rundir"/debian-base
-  docker build -t "${IMAGE_REPO}/debian-base:11" -t "${IMAGE_REPO}/debian-base:latest" -t "${IMAGE_REPO}/debian:latest" -t "mdeb" . "$@"    
+  docker build -t "${IMAGE_REPO}/debian-base:12" -t "${IMAGE_REPO}/debian-base:latest" -t "${IMAGE_REPO}/debian:latest" -t "mdeb" . "$@"    
 }
 
 run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
-  docker build -t "${IMAGE_REPO}/debian-interactive:11" -t "${IMAGE_REPO}/debian-interactive:latest" -t "debi" .
+  docker build -t "${IMAGE_REPO}/debian-interactive:12" -t "${IMAGE_REPO}/debian-interactive:latest" -t "debi" .
 }
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
   docker build \
    --build-arg "NIX_VERSION=${NIX_VERSION}"\
    --build-arg "NIX_VERSION_SHA=${NIX_VERSION_SHA}"\
-   --tag "${IMAGE_REPO}/debian-nix:11" \
+   --tag "${IMAGE_REPO}/debian-nix:12" \
    --tag "${IMAGE_REPO}/debian-nix:latest" \
    .
 }
 run:build:debian-zsh () {
   cd "$rundir"/debian-zsh
-  docker build -t "${IMAGE_REPO}/debian-zsh:11" -t "${IMAGE_REPO}/debian-zsh:latest" .
+  docker build -t "${IMAGE_REPO}/debian-zsh:12" -t "${IMAGE_REPO}/debian-zsh:latest" .
 }
 run:build:debian-deno () {
   cd "$rundir"/debian-deno

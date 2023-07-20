@@ -1,4 +1,4 @@
-FROM me/debian-base:11
+FROM me/debian-base:12
 ARG NIX_VERSION=2.11.1
 ARG NIX_VERSION_SHA=c6d48479d50a01cdfc3669440776692ca7094ff29028b1fec6da0abeead16a01
 RUN set -uex; \
@@ -8,7 +8,8 @@ RUN set -uex; \
     chown nix /nix;\
     tarball="nix-${NIX_VERSION}-x86_64-linux.tar.xz";\
     curl -L "https://releases.nixos.org/nix/nix-${NIX_VERSION}/${tarball}" -o "/tmp/${tarball}";\
-    sha256sum -b "/tmp/${tarball}" | grep -e "^${NIX_VERSION_SHA}\s";\
+    shacheck=$(sha256sum -b "/tmp/${tarball}"); \
+    printf "%s" "$shacheck" | grep -e "^${NIX_VERSION_SHA}\s";\
     xz -dc "/tmp/${tarball}" | tar -C /tmp -xf -;
 ENV USER=nix
 USER nix
