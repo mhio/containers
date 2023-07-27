@@ -19,17 +19,17 @@ NIX_VERSION_SHA="c5b55a36129a106a53f21a8aa0c51807e020521b3e268e597f1efb3ce81e272
 run:getReleases(){
   set +x
   node_all="$(curl -sfS 'https://nodejs.org/download/release/index.tab')"
-  node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1,$2 }')"
-  format="%12s: %s\n"
-  printf "$format" "node v18" "$node_18"
-  printf "$format" "deno" "$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq -r '.[0].name')"
-  printf "$format" "ntfy" "$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq -r '.[0].name')"
-  printf "$format" "nushell" "$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq -r '.[0].name')"
+  node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1 }')"
+  format="%12s: %8s - %s \n"
+  printf "$format" "node v18" "$node_18" "$NODE_VERSION"
+  printf "$format" "deno" "$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq -r '.[0].name')" "$DENO_VERSION"
+  printf "$format" "ntfy" "$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq -r '.[0].name')" "$NTFY_VERSION"
+  printf "$format" "nushell" "$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq -r '.[0].name')" "$NUSHELL_VERSION"
   nix_latest="$(curl -sfS 'https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nix/' \
     | xpath -q -e '//ListBucketResult/CommonPrefixes/Prefix/text()' \
     | sort --version-sort \
     | tail -1)"
-  printf "$format" "nix" "$nix_latest"
+  printf "$format" "nix" "$nix_latest" "$NIX_VERSION"
 }
 
 run:build (){
