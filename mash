@@ -9,12 +9,27 @@ cd "$rundir"
 
 IMAGE_REPO="me"
 
-NODE_VERSION="18.16.1"
-DENO_VERSION="1.35.1"
+NODE_VERSION="18.17.0"
+DENO_VERSION="1.35.3"
 NTFY_VERSION="2.6.2"
-NUSHELL_VERSION="0.82.0"
+NUSHELL_VERSION="0.83.0"
 NIX_VERSION="2.16.1"
 NIX_VERSION_SHA="c5b55a36129a106a53f21a8aa0c51807e020521b3e268e597f1efb3ce81e2722"
+
+run:getReleases(){
+  set +x
+  node_all="$(curl -sfS 'https://nodejs.org/download/release/index.tab')"
+  node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1,$2 }')"
+  printf "node v18: %s\n" "$node_18"
+  printf "deno: %s\n" "$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq '.[0].name')"
+  printf "ntfy: %s\n" "$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq '.[0].name')"
+  printf "nushell: %s\n" "$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq '.[0].name')"
+  nix_latest="$(curl -sfS --header 'accept: application/json' 'https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nix/' \
+    | xpath -q -e '//ListBucketResult/CommonPrefixes/Prefix/text()' \
+    | sort --version-sort \
+    | tail -1)"
+  printf "nix: %s\n" "$nix_latest"
+}
 
 run:build (){
   run:build:debian-base "$@"    
@@ -110,7 +125,7 @@ run:docker () {
 }
 
 run:check:from(){
-  grep FROM */Dockerfile
+  grep FROM ./*/Dockerfile
 }
 
 
