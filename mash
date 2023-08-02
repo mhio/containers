@@ -32,6 +32,16 @@ run:getReleases(){
   printf "$format" "nix" "$nix_latest" "$NIX_VERSION"
 }
 
+run:getReleaseLink(){
+  curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' \
+    | jq '
+      .[0] 
+      | [ 
+          .name, 
+          (.assets[] | select( (.name|test("x86_64")) and (.name|test("linux")) ) | .browser_download_url )
+        ]'
+}
+
 run:build (){
   run:build:debian-base "$@"    
   run:build:debian-interactive "$@"
