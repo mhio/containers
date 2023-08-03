@@ -1,4 +1,4 @@
-FROM me/debian-interactive:11
+FROM me/debian-interactive:12
 
 RUN set -uex;\
     apt-get update;\

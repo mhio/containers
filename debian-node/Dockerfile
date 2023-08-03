@@ -1,4 +1,4 @@
-FROM me/debian-base:11 AS install
+FROM me/debian-base:12 AS install
 SHELL [ "/bin/sh", "-uexc" ]
 
 ARG NODE_VERSION
