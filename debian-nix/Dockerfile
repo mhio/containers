@@ -1,6 +1,6 @@
 FROM me/debian-base:12
-ARG NIX_VERSION=2.11.1
-ARG NIX_VERSION_SHA=c6d48479d50a01cdfc3669440776692ca7094ff29028b1fec6da0abeead16a01
+ARG NIX_VERSION #=2.11.1
+ARG NIX_VERSION_SHA #=c6d48479d50a01cdfc3669440776692ca7094ff29028b1fec6da0abeead16a01
 RUN set -uex; \
     groupadd nixbld;\
     useradd nix --create-home --home-dir /home/nix --groups nixbld;\
