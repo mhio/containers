@@ -11,7 +11,7 @@ cd "$rundir"
 IMAGE_REPO="me"
 
 NODE_VERSION="18.17.0"
-DENO_VERSION="1.35.3"
+DENO_VERSION="1.36.0"
 NTFY_VERSION="2.6.2"
 NUSHELL_VERSION="0.83.1"
 NIX_VERSION="2.17.0"
@@ -46,12 +46,12 @@ run:getReleaseLink(){
 run:build (){
   run:build:debian-base "$@"    
   run:build:debian-interactive "$@"
-  run:build:debian-zsh "$@"
   run:build:debian-deno "$@"
   run:build:debian-node "$@"
   run:build:debian-ntfy "$@"
   run:build:debian-nushell "$@"
   run:build:debian-nix "$@"
+  run:build:debian-zsh "$@"
 }
 
 run:build:debian-base(){
