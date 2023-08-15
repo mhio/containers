@@ -10,8 +10,8 @@ cd "$rundir"
 # can be a `host/me`
 IMAGE_REPO="me"
 
-NODE_VERSION="18.17.0"
-DENO_VERSION="1.36.0"
+NODE_VERSION="18.17.1"
+DENO_VERSION="1.36.1"
 NTFY_VERSION="2.6.2"
 NUSHELL_VERSION="0.83.1"
 NIX_VERSION="2.17.0"
@@ -33,25 +33,42 @@ run:getReleases(){
   printf "$format" "nix" "$nix_latest" "$NIX_VERSION"
 }
 
-run:getReleaseLink(){
-  curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' \
+r(){
+  printf "runcmd: %s" "$1" 1>&2
+  printf " '%s'" "${@:2}" 1>&2
+  printf "\n" 1>&2
+  "$@"
+  rc=$?
+  printf "rancmd: [%s] %s" "$rc" "$1" 1>&2
+  printf " '%s'" "${@:2}" 1>&2
+  printf "\n" 1>&2
+}
+r echo test "quotes" "spaced quotes" 'singlequote'
+
+
+run:getReleasesLink(){
+  url='https://api.github.com/repos/denoland/deno/releases?per_page=1'
+  set +x
+  res=$(curl -sfS "$url")
+  echo "$res" \
     | jq '
       .[0] 
       | [ 
           .name, 
           (.assets[] | select( (.name|test("x86_64")) and (.name|test("linux")) ) | .browser_download_url )
         ]'
+  rc=$?; [ "$rc" != "0" ] && echo "ERROR: $res" && return "$rc"
 }
 
 run:build (){
   run:build:debian-base "$@"    
-  run:build:debian-interactive "$@"
-  run:build:debian-deno "$@"
-  run:build:debian-node "$@"
-  run:build:debian-ntfy "$@"
-  run:build:debian-nushell "$@"
-  run:build:debian-nix "$@"
-  run:build:debian-zsh "$@"
+  run:build:debian-interactive "$@" --pull=false
+  run:build:debian-deno "$@"  --pull=false
+  run:build:debian-node "$@"  --pull=false
+  run:build:debian-ntfy "$@"  --pull=false
+  run:build:debian-nushell "$@"  --pull=false
+  run:build:debian-nix "$@"  --pull=false
+  run:build:debian-zsh "$@"  --pull=false
 }
 
 run:build:debian-base(){
