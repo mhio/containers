@@ -85,7 +85,7 @@ run:getReleasesLink(){
 }
 
 run:build (){
-  run:build:debian-base "$@"    
+  run:build:debian-base "$@"
   run:build:debian-interactive "$@" --pull=false
   run:build:debian-deno "$@"  --pull=false
   run:build:debian-node "$@"  --pull=false
@@ -99,12 +99,20 @@ run:build:debian-base(){
   docker pull gcr.io/distroless/cc-debian12:latest
   docker pull docker.io/debian:12-slim
   cd "$rundir"/debian-base
-  docker build -t "${IMAGE_REPO}/debian-base:12" -t "${IMAGE_REPO}/debian-base:latest" -t "${IMAGE_REPO}/debian:latest" -t "mdeb" . "$@"    
+  docker build \
+   -t "${IMAGE_REPO}/debian-base:12" \
+   -t "${IMAGE_REPO}/debian-base:latest" \
+   -t "${IMAGE_REPO}/debian:latest" \
+   . "$@"    
 }
 
 run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
-  docker build -t "${IMAGE_REPO}/debian-interactive:12" -t "${IMAGE_REPO}/debian-interactive:latest" -t "debi" .
+  docker build \
+   -t "${IMAGE_REPO}/debian-interactive:12" \
+   -t "${IMAGE_REPO}/debian-interactive:latest" \
+   -t "debi" \
+   . "$@"
 }
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
@@ -113,7 +121,7 @@ run:build:debian-nix () {
    --build-arg "NIX_VERSION_SHA=${NIX_VERSION_SHA}"\
    --tag "${IMAGE_REPO}/debian-nix:12" \
    --tag "${IMAGE_REPO}/debian-nix:latest" \
-   .
+   . "$@"
 }
 run:build:debian-zsh () {
   cd "$rundir"/debian-zsh
@@ -123,9 +131,9 @@ run:build:debian-deno () {
   cd "$rundir"/debian-deno
   docker build \
    --build-arg "DENO_VERSION=${DENO_VERSION}" \
-   --tag "${IMAGE_REPO}/debian-deno:11" \
+   --tag "${IMAGE_REPO}/debian-deno:12" \
    --tag "${IMAGE_REPO}/debian-deno:latest" \
-   .
+   . "$@"
 }
 run:build:debian-node () {
   cd "$rundir"/debian-node
@@ -133,21 +141,32 @@ run:build:debian-node () {
    --build-arg NODE_VERSION="${NODE_VERSION}" \
    --tag "${IMAGE_REPO}/debian-node:18" \
    --tag "${IMAGE_REPO}/debian-node:latest" \
-   .
+   . "$@"
   #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
 }
 run:build:debian-ntfy () {
   cd "$rundir"/debian-ntfy
-  docker build -t "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" --build-arg "NTFY_VERSION=${NTFY_VERSION}" . "$@"
+  docker build \
+   --build-arg "NTFY_VERSION=${NTFY_VERSION}" \
+   -t "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" \
+   . "$@"
 }
 run:build:debian-nushell () {
   cd "$rundir"/debian-nushell
-  docker build -t "${IMAGE_REPO}/nushell:${NUSHELL_VERSION}" --build-arg "NUSHELL_VERSION=${NUSHELL_VERSION}" . "$@"
+  docker build \
+   --build-arg "NUSHELL_VERSION=${NUSHELL_VERSION}" \
+   -t "${IMAGE_REPO}/nushell:${NUSHELL_VERSION}" \
+   . "$@"
 }
 run:run:debian-base(){
   local type_name="$1"
   shift
-  docker run --interactive --tty --rm "${IMAGE_REPO}/debian-${type_name}:latest" "$@"
+  docker run \
+   --interactive i\
+   --tty \
+   --rm \
+   "${IMAGE_REPO}/debian-${type_name}:latest" \
+   "$@"
 }
 
 run:debian(){
