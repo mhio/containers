@@ -9,10 +9,11 @@ cd "$rundir"
 
 # can be a `host/me`
 IMAGE_REPO="me"
-NODE_VERSION="18.18.0"
-DENO_VERSION="1.37.1"
+NODE_VERSION="18.18.2"
+DENO_VERSION="1.38.0"
 NTFY_VERSION="2.7.0"
-NUSHELL_VERSION="0.85.0"
+COMMAFEED_VERSION="3.10.0"
+NUSHELL_VERSION="0.86.0"
 NIX_VERSION="2.18.1"
 NIX_VERSION_SHA="eb838a533ca280a3639cea47bfc43f5527f72a21d84ba1078aee206837bc0158"
 
@@ -34,6 +35,8 @@ run:getReleases(){
   printf "$format" "deno" "$deno_latest" "$DENO_VERSION"
   ntfy_latest="$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
   printf "$format" "ntfy" "$ntfy_latest" "$NTFY_VERSION"
+  commafeed_latest="$(curl -sfS 'https://api.github.com/repos/Athou/commafeed/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
+  printf "$format" "commafeed" "$commafeed_latest" "$COMMAFEED_VERSION"
   nushell_latest="$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq -r '.[0].name')"
   printf "$format" "nushell" "$nushell_latest" "$NUSHELL_VERSION"
   nix_latest="$(curl -sfS 'https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nix/' \
@@ -45,6 +48,7 @@ run:getReleases(){
   if [ "$node_18" != "$NODE_VERSION" ] \
      || [ "$deno_latest" != "$DENO_VERSION" ] \
      || [ "$ntfy_latest" != "$NTFY_VERSION" ] \
+     || [ "$commafeed_latest" != "$COMMAFEED_VERSION" ] \
      || [ "$nushell_latest" != "$NUSHELL_VERSION" ] \
      || [ "$nix_latest_version_only" != "$NIX_VERSION" ]
   then
@@ -52,6 +56,7 @@ run:getReleases(){
     printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_18")"
     printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
     printf '%s="%s"\n' "NTFY_VERSION" "$ntfy_latest"
+    printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
     printf '%s="%s"\n' "NUSHELL_VERSION" "$nushell_latest"
     printf '%s="%s"\n' "NIX_VERSION" "$nix_latest_version_only"
   fi 
@@ -90,6 +95,7 @@ run:build (){
   run:build:debian-deno "$@"  --pull=false
   run:build:debian-node "$@"  --pull=false
   run:build:debian-ntfy "$@"  --pull=false
+  run:build:debian-commafeed "$@"  --pull=false
   run:build:debian-nushell "$@"  --pull=false
   run:build:debian-nix "$@"  --pull=false
   run:build:debian-zsh "$@"  --pull=false
@@ -97,6 +103,7 @@ run:build (){
 
 run:build:debian-base(){
   docker pull gcr.io/distroless/cc-debian12:latest
+  docker pull gcr.io/distroless/java21-debian12:latest
   docker pull docker.io/debian:12-slim
   cd "$rundir"/debian-base
   docker build \
@@ -149,6 +156,13 @@ run:build:debian-ntfy () {
   docker build \
    --build-arg "NTFY_VERSION=${NTFY_VERSION}" \
    -t "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" \
+   . "$@"
+}
+run:build:debian-commafeed () {
+  cd "$rundir"/debian-commafeed
+  docker build \
+   --build-arg "COMMAFEED_VERSION=${COMMAFEED_VERSION}" \
+   -t "${IMAGE_REPO}/commafeed:${COMMAFEED_VERSION}" \
    . "$@"
 }
 run:build:debian-nushell () {
