@@ -21,7 +21,8 @@ RUN set -uex;\
     mkdir -p ~/.config/nix/;\
     touch ~/.config/nix/nix.conf;\
     . /home/nix/.nix-profile/etc/profile.d/nix.sh;\
-    nix-shell -p curl -p jq;
+    nix-channel --update;\
+    nix-shell -p curl jq;
 
 #nix-channel --list
 #echo 'binary-caches = http://acng/HTTPS///cache.nixos.org/' > ~/.config/nix/nix.conf;\

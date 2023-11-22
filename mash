@@ -9,33 +9,43 @@ cd "$rundir"
 
 # can be a `host/me`
 IMAGE_REPO="me"
-NODE_VERSION="18.18.2"
-DENO_VERSION="1.38.1"
-NTFY_VERSION="2.7.0"
+
+NODE_VERSION="20.9.0"
+DENO_VERSION="1.38.2"
+NTFY_VERSION="2.8.0"
 COMMAFEED_VERSION="3.10.0"
-NUSHELL_VERSION="0.87.0"
-NIX_VERSION="2.18.1"
-NIX_VERSION_SHA="eb838a533ca280a3639cea47bfc43f5527f72a21d84ba1078aee206837bc0158"
+NUSHELL_VERSION="0.87.1"
+NIX_VERSION="2.19.1"
+NIX_VERSION_SHA="60c4efec34866dea8fe8f42bfdd878cf6557b9c3035cc5f2208aa0133d404736"
+
 
 removeLeadingV(){
   printf "%s\n" "${1##v}"
 }
 removeLeadingVs(){
+  removeLeadingTexts "v"
+}
+removeLeadingText(){
+  printf "%s\n" "${2##$1}"
+}
+removeLeadingTexts(){
   while read -r line; do
-    removeLeadingV "$line"
+    removeLeadingText "$1" "$line"
   done
 }
 run:getReleases(){
   set +x
   node_all="$(curl -sfS 'https://nodejs.org/download/release/index.tab')"
-  node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
+  #node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
+  node_20="$(echo "$node_all" | grep '^v20' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
   format="%12s: %8s - %s \n"
-  printf "$format" "node v18" "$node_18" "$NODE_VERSION"
+  #printf "$format" "node v18" "$node_18" "$NODE_VERSION"
+  printf "$format" "node v20" "$node_20" "$NODE_VERSION"
   deno_latest="$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
   printf "$format" "deno" "$deno_latest" "$DENO_VERSION"
   ntfy_latest="$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
   printf "$format" "ntfy" "$ntfy_latest" "$NTFY_VERSION"
-  commafeed_latest="$(curl -sfS 'https://api.github.com/repos/Athou/commafeed/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
+  commafeed_latest="$(curl -sfS 'https://api.github.com/repos/Athou/commafeed/releases?per_page=1' | jq -r '.[0].name' | removeLeadingTexts "CommaFeed " | removeLeadingVs)"
   printf "$format" "commafeed" "$commafeed_latest" "$COMMAFEED_VERSION"
   nushell_latest="$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq -r '.[0].name')"
   printf "$format" "nushell" "$nushell_latest" "$NUSHELL_VERSION"
@@ -45,13 +55,14 @@ run:getReleases(){
     | tail -1)"
   nix_latest_version_only="$(echo "$nix_latest" | perl -pe 's!nix/nix-(\d+\.\d+\.\d+)/!$1!')"
   printf "$format" "nix" "$nix_latest_version_only" "$NIX_VERSION"
-  if [ "$node_18" != "$NODE_VERSION" ] \
+  if [ "$node_20" != "$NODE_VERSION" ] \
      || [ "$deno_latest" != "$DENO_VERSION" ] \
      || [ "$ntfy_latest" != "$NTFY_VERSION" ] \
      || [ "$commafeed_latest" != "$COMMAFEED_VERSION" ] \
      || [ "$nushell_latest" != "$NUSHELL_VERSION" ] \
      || [ "$nix_latest_version_only" != "$NIX_VERSION" ]
   then
+    nix_latest_version_sha=$(curl -sfS "https://nix-releases.s3.amazonaws.com/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz.sha256")
     printf '\n'
     printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_18")"
     printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
@@ -59,6 +70,7 @@ run:getReleases(){
     printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
     printf '%s="%s"\n' "NUSHELL_VERSION" "$nushell_latest"
     printf '%s="%s"\n' "NIX_VERSION" "$nix_latest_version_only"
+    printf '%s="%s"\n' "NIX_VERSION_SHA" "$nix_latest_version_sha"
   fi 
 }
 
@@ -72,7 +84,7 @@ r(){
   printf " '%s'" "${@:2}" 1>&2
   printf "\n" 1>&2
 }
-r echo test "quotes" "spaced quotes" 'singlequote'
+#r echo test "quotes" "spaced quotes" 'singlequote'
 
 
 run:getReleasesLink(){
