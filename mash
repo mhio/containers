@@ -10,14 +10,15 @@ cd "$rundir"
 # can be a `host/me`
 IMAGE_REPO="me"
 
-NODE_VERSION="20.9.0"
+# begin--versions
+NODE_VERSION="20.10.0"
 DENO_VERSION="1.38.2"
 NTFY_VERSION="2.8.0"
 COMMAFEED_VERSION="3.10.0"
 NUSHELL_VERSION="0.87.1"
 NIX_VERSION="2.19.1"
 NIX_VERSION_SHA="60c4efec34866dea8fe8f42bfdd878cf6557b9c3035cc5f2208aa0133d404736"
-
+# end--versions
 
 removeLeadingV(){
   printf "%s\n" "${1##v}"
@@ -36,10 +37,8 @@ removeLeadingTexts(){
 run:getReleases(){
   set +x
   node_all="$(curl -sfS 'https://nodejs.org/download/release/index.tab')"
-  #node_18="$(echo "$node_all" | grep '^v18' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
   node_20="$(echo "$node_all" | grep '^v20' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
   format="%12s: %8s - %s \n"
-  #printf "$format" "node v18" "$node_18" "$NODE_VERSION"
   printf "$format" "node v20" "$node_20" "$NODE_VERSION"
   deno_latest="$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
   printf "$format" "deno" "$deno_latest" "$DENO_VERSION"
@@ -64,7 +63,7 @@ run:getReleases(){
   then
     nix_latest_version_sha=$(curl -sfS "https://nix-releases.s3.amazonaws.com/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz.sha256")
     printf '\n'
-    printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_18")"
+    printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_20")"
     printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
     printf '%s="%s"\n' "NTFY_VERSION" "$ntfy_latest"
     printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
@@ -158,7 +157,7 @@ run:build:debian-node () {
   cd "$rundir"/debian-node
   docker build \
    --build-arg NODE_VERSION="${NODE_VERSION}" \
-   --tag "${IMAGE_REPO}/debian-node:18" \
+   --tag "${IMAGE_REPO}/debian-node:20" \
    --tag "${IMAGE_REPO}/debian-node:latest" \
    . "$@"
   #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
