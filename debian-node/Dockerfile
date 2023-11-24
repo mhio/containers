@@ -3,13 +3,15 @@ SHELL [ "/bin/sh", "-uexc" ]
 
 ARG NODE_VERSION
 WORKDIR /build
-RUN file="node-v${NODE_VERSION}-linux-x64.tar.xz"; \
+RUN label="node-v${NODE_VERSION}-linux-x64"; \
+    file="${label}.tar.xz"; \
     echo $file; \
     curl -sSfLl "https://nodejs.org/download/release/v${NODE_VERSION}/${file}" > "${file}"; \
-    tar -xvf "node-v${NODE_VERSION}-linux-x64.tar.xz"; \
-    rm "node-v${NODE_VERSION}-linux-x64.tar.xz"; \
-    ls -l "/build/node-v${NODE_VERSION}-linux-x64"; \
-    mv "/build/node-v${NODE_VERSION}-linux-x64" "/build/node";
+    sha256sum "$file"; \
+    tar -xvf "$file"; \
+    rm "$file"; \
+    ls -l "/build/${label}"; \
+    ln -s "/build/${label}" "/build/node";
 #RUN apt-get update -qy; \
 #    apt-get install openssl ca-certificates;
 

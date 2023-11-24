@@ -1,9 +1,11 @@
 FROM me/debian-base:12 AS install
 ARG DENO_VERSION
 RUN set -uex;\
+    apt-get -qy update;\
     apt-get -y install unzip;
 RUN set -uex;\
     curl -sSfLl "https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip" > /deno-x86_64-unknown-linux-gnu.zip;\
+    sha256sum deno-x86_64-unknown-linux-gnu.zip;\
     unzip /deno-x86_64-unknown-linux-gnu.zip;\
     rm /deno-x86_64-unknown-linux-gnu.zip;\
     chmod 755 /deno;\
