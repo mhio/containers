@@ -11,5 +11,12 @@ RUN set -uex; \
 
 FROM me/debian-interactive:12
 COPY --from=install /install/nushell/nu /usr/bin/nu
-COPY 0.71/config.nu 0.71/env.nu /root/.config/nushell/
+#COPY 0.71/config.nu 0.71/env.nu /root/.config/nushell/
+RUN set -uex;\
+    mkdir -vp ~/.config/nushell;\
+    /usr/bin/nu -c 'config env --default | save -f ~/.config/nushell/env.nu';\
+    /usr/bin/nu -c 'config nu --default | save -f ~/.config/nushell/config.nu';
+# Need to set: show_banner: false 
+# But do it in nu
+    
 ENTRYPOINT [ "/usr/bin/nu" ]
