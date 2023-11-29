@@ -1,0 +1,4 @@
+workdir/
+.tmp*
+.DS_Store
+
