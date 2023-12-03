@@ -12,11 +12,11 @@ IMAGE_REPO="me"
 
 # begin--versions
 NODE_VERSION="20.10.0"
-DENO_VERSION="1.38.3"
+DENO_VERSION="1.38.4"
 NTFY_VERSION="2.8.0"
 COMMAFEED_VERSION="3.10.0"
 NUSHELL_VERSION="0.87.1"
-NIX_VERSION="2.19.1"
+NIX_VERSION="2.19.2"
 NIX_VERSION_SHA="60c4efec34866dea8fe8f42bfdd878cf6557b9c3035cc5f2208aa0133d404736"
 # end--versions
 
@@ -100,6 +100,16 @@ run:getReleasesLink(){
 }
 
 run:build (){
+  run:build:deps "$@"
+  run:build:containers "$@"
+}
+
+run:build:deps(){
+  docker pull gcr.io/distroless/cc-debian12:latest
+  docker pull gcr.io/distroless/java21-debian12:latest
+  docker pull docker.io/debian:12-slim
+}
+run:build:containers(){
   run:build:debian-base "$@"
   run:build:debian-interactive "$@" --pull=false
   run:build:debian-deno "$@"  --pull=false
@@ -112,9 +122,6 @@ run:build (){
 }
 
 run:build:debian-base(){
-  docker pull gcr.io/distroless/cc-debian12:latest
-  docker pull gcr.io/distroless/java21-debian12:latest
-  docker pull docker.io/debian:12-slim
   cd "$rundir"/debian-base
   docker build \
    -t "${IMAGE_REPO}/debian-base:12" \
