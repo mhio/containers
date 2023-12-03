@@ -20,6 +20,7 @@ Creates the following tags
 me/debian
 me/debian-base:12         me/debian-base:latest
 
+debi
 me/debian-interactive:12  me/debian-interactive:latest
 
 me/debian-nix:12          me/debian-nix:latest
