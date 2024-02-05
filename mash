@@ -10,13 +10,13 @@ cd "$rundir"
 IMAGE_REPO="me"
 
 # begin--versions
-NODE_VERSION="20.10.0"
-DENO_VERSION="1.39.1"
+NODE_VERSION="20.11.0"
+DENO_VERSION="1.40.3"
 NTFY_VERSION="2.8.0"
-COMMAFEED_VERSION="3.10.1"
-NUSHELL_VERSION="0.88.1"
-NIX_VERSION="2.19.2"
-NIX_VERSION_SHA="9b2fc17c7fd21da2899e23a3b324b7445d41a2ce4d648dedb28cf88b2809e32f"
+COMMAFEED_VERSION="4.2.1"
+NUSHELL_VERSION="0.89.0"
+NIX_VERSION="2.20.1"
+NIX_VERSION_SHA="33f1effb9f02b19262c97966fb61c67108af99934d8d5036ec6e0a988ecb93ac"
 # end--versions
 
 removeLeadingV(){
@@ -60,7 +60,7 @@ run:getReleases(){
      || [ "$nushell_latest" != "$NUSHELL_VERSION" ] \
      || [ "$nix_latest_version_only" != "$NIX_VERSION" ]
   then
-    nix_latest_version_sha=$(curl -sfS "https://nix-releases.s3.amazonaws.com/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz.sha256")
+    nix_latest_version_sha=$(curl -sfS "https://nix-releases.s3.amazonaws.com/nix/nix-${nix_latest_version_only}/nix-${nix_latest_version_only}-x86_64-linux.tar.xz.sha256")
     printf '\n'
     printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_20")"
     printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"

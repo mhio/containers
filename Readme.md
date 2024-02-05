@@ -38,3 +38,11 @@ me/commafeed:n.n.n        me/commafeed:latest
 me/nushell:n.n.n          me/nushell:latest
 ```
 
+Version at #5fff6b48
+
+- node 20.11.0
+- deno 1.40.3
+- ntfy 2.8.0
+- commafeed 4.2.1
+- nushell 0.89.0
+- nix 2.20.1
