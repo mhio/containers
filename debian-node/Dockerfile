@@ -21,5 +21,5 @@ RUN label="node-v${NODE_VERSION}-linux-x64"; \
 FROM gcr.io/distroless/cc-debian12:latest
 COPY --from=install "/build/node" /usr/local
 RUN [ "/usr/local/bin/node", "--eval", "console.log(process.version); process.exit()" ]
-ENTRYPOINT [ "/usr/local/bin/node" ]
+#ENTRYPOINT [ "/usr/local/bin/node" ]
 
