@@ -2,22 +2,30 @@
 set -ueo pipefail
 dateTime(){ date -u '+%Y-%m-%dT%H:%M:%SZ'; }
 runpwd=$(pwd -P)
-rundir=$(cd -P -- $(dirname -- "$0") && pwd -P)
+rundir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 cd "$rundir"
 # {make.sh user}
 
-# can be a `host/me`
+
+# can be a `host.er/me`
 IMAGE_REPO="me"
 
+if [ -f .local-versions ]; then
+  . .local-versions
+else
 # begin--versions
-NODE_VERSION="20.12.0"
-DENO_VERSION="1.42.0"
+NODE_VERSION="20.12.2"
+DENO_VERSION="1.42.3"
 NTFY_VERSION="2.10.0"
+GO_VERSION="1.22"
 COMMAFEED_VERSION="4.3.3"
-NUSHELL_VERSION="0.91.0"
-NIX_VERSION="2.21.1"
-NIX_VERSION_SHA="69f4c7efe480fac3bde1bc765a922f439445e02fc06c93020e82b52da35dea06"
+NUSHELL_VERSION="0.92.2"
+VSCODE_COMMIT="e170252f762678dec6ca2cc69aba1570769a5d39"
+VSCODIUM_VERSION="1.88.1.24104"
+NIX_VERSION="2.21.2"
+NIX_VERSION_SHA="65cf7fe9e7e7011cf3732c7f9a51d379d69241017b356b6ab354572b038ccfd7"
 # end--versions
+fi
 
 removeLeadingV(){
   removeLeadingText "v" "$1"
@@ -26,27 +34,55 @@ removeLeadingVs(){
   removeLeadingTexts "v"
 }
 removeLeadingText(){
-  printf "%s\n" "${2##$1}"
+  printf "%s\n" "${2##"$1"}"
 }
 removeLeadingTexts(){
   while read -r line; do
     removeLeadingText "$1" "$line"
   done
 }
+getGithubRepoReleases(){
+  local repo=$1 # group/project
+  curl -sfS "https://api.github.com/repos/$repo/releases?per_page=1&draft=false&prerelease=false"
+}
+getGithubRepoTag(){
+  local repo=$1 # group/project
+  local tag_name=$2 # any
+  curl -sfS "https://api.github.com/repos/$repo/git/refs/tags/${tag_name}"
+}
+getGithubRepoReleaseLatest(){
+  local repo=$1 # group/project
+  getGithubRepoReleases "$repo" | jq '.[0]'
+}
+getGithubRepoReleaseVersions(){
+  local repo=$1 # group/project
+  getGithubRepoReleaseLatest "$repo" | jq -r '.name' | removeLeadingVs
+}
+getGithubRepoReleaseCommits(){
+  local repo=$1 # group/project
+  tag_name=$(getGithubRepoReleaseLatest "$repo" | jq -r '.tag_name')
+  getGithubRepoTag "$repo" "$tag_name" | jq -r '.object.sha'
+}
+
+#shellcheck disable=SC2059
 run:getReleases(){
   set +x
   node_all="$(curl -sfS 'https://nodejs.org/download/release/index.tab')"
   node_20="$(echo "$node_all" | grep '^v20' | head -1 | awk '{ print $1 }' | removeLeadingVs)"
   format="%12s: %8s - %s \n"
   printf "$format" "node v20" "$node_20" "$NODE_VERSION"
-  deno_latest="$(curl -sfS 'https://api.github.com/repos/denoland/deno/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
+  deno_latest="$(getGithubRepoReleaseVersions denoland/deno)"
   printf "$format" "deno" "$deno_latest" "$DENO_VERSION"
-  ntfy_latest="$(curl -sfS 'https://api.github.com/repos/binwiederhier/ntfy/releases?per_page=1' | jq -r '.[0].name' | removeLeadingVs)"
+  ntfy_latest="$(getGithubRepoReleaseVersions binwiederhier/ntfy)"
   printf "$format" "ntfy" "$ntfy_latest" "$NTFY_VERSION"
-  commafeed_latest="$(curl -sfS 'https://api.github.com/repos/Athou/commafeed/releases?per_page=1' | jq -r '.[0].name' | removeLeadingTexts "CommaFeed " | removeLeadingVs)"
+  commafeed_latest="$(getGithubRepoReleaseLatest "Athou/commafeed" | jq -r '.name' | removeLeadingTexts "CommaFeed ")"
   printf "$format" "commafeed" "$commafeed_latest" "$COMMAFEED_VERSION"
-  nushell_latest="$(curl -sfS 'https://api.github.com/repos/nushell/nushell/releases?per_page=1' | jq -r '.[0].name')"
+  nushell_latest="$(getGithubRepoReleaseVersions nushell/nushell)"
   printf "$format" "nushell" "$nushell_latest" "$NUSHELL_VERSION"
+  vscode_latest="$(getGithubRepoReleaseCommits microsoft/vscode)"
+  printf "$format" "vscode" "$vscode_latest" "$VSCODE_COMMIT"
+  vscodium_latest="$(getGithubRepoReleaseVersions VSCodium/vscodium)"
+  printf "$format" "vscode" "$vscodium_latest" "$VSCODIUM_VERSION"
   nix_latest="$(curl -sfS 'https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nix/' \
     | xpath -q -e '//ListBucketResult/CommonPrefixes/Prefix/text()' \
     | sort --version-sort \
@@ -58,17 +94,23 @@ run:getReleases(){
      || [ "$ntfy_latest" != "$NTFY_VERSION" ] \
      || [ "$commafeed_latest" != "$COMMAFEED_VERSION" ] \
      || [ "$nushell_latest" != "$NUSHELL_VERSION" ] \
+     || [ "$vscode_latest" != "$VSCODE_COMMIT" ] \
+     || [ "$vscodium_latest" != "$VSCODIUM_VERSION" ] \
      || [ "$nix_latest_version_only" != "$NIX_VERSION" ]
   then
     nix_latest_version_sha=$(curl -sfS "https://nix-releases.s3.amazonaws.com/nix/nix-${nix_latest_version_only}/nix-${nix_latest_version_only}-x86_64-linux.tar.xz.sha256")
     printf '\n'
-    printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_20")"
-    printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
-    printf '%s="%s"\n' "NTFY_VERSION" "$ntfy_latest"
-    printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
-    printf '%s="%s"\n' "NUSHELL_VERSION" "$nushell_latest"
-    printf '%s="%s"\n' "NIX_VERSION" "$nix_latest_version_only"
-    printf '%s="%s"\n' "NIX_VERSION_SHA" "$nix_latest_version_sha"
+    (
+      printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_20")"
+      printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
+      printf '%s="%s"\n' "NTFY_VERSION" "$ntfy_latest"
+      printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
+      printf '%s="%s"\n' "NUSHELL_VERSION" "$nushell_latest"
+      printf '%s="%s"\n' "VSCODE_COMMIT" "$vscode_latest"
+      printf '%s="%s"\n' "VSCODIUM_VERSION" "$vscodium_latest"
+      printf '%s="%s"\n' "NIX_VERSION" "$nix_latest_version_only"
+      printf '%s="%s"\n' "NIX_VERSION_SHA" "$nix_latest_version_sha"
+    ) | tee .latest-versions
   fi 
 }
 
@@ -107,39 +149,56 @@ run:build:deps(){
   docker pull gcr.io/distroless/cc-debian12:latest
   docker pull gcr.io/distroless/java21-debian12:latest
   docker pull docker.io/debian:12-slim
+  docker pull "docker.io/golang:$GO_VERSION"
 }
 run:build:containers(){
   run:build:debian-base "$@"
-  run:build:debian-interactive "$@" --pull=false
+  # lang
   run:build:debian-deno "$@"  --pull=false
   run:build:debian-node "$@"  --pull=false
-  run:build:debian-ntfy "$@"  --pull=false
+  run:build:debian-php "$@"  --pull=false
+  run:build:debian-php-7-4 "$@"  --pull=false
+  run:build:debian-vscodium-reh "$@"  --pull=false
+  run:build:debian-vscodium-reh:extend "${IMAGE_REPO}/debian-php" "7.4" "$@"  --pull=false
+  run:build:debian-vscodium-reh:extend "${IMAGE_REPO}/debian-node" "20" "$@"  --pull=false
+  run:build:debian-vscodium-reh:extend "docker.io/golang" "1.22" "$@"  --pull=false
+  run:build:debian-vscode-reh "$@"  --pull=false
+  run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-php" "7.4" "$@"  --pull=false
+  run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-node" "20" "$@"  --pull=false
+  run:build:debian-vscode-reh:extend "docker.io/golang" "$GO_VERSION" "$@"  --pull=false
+  # app
   run:build:debian-commafeed "$@"  --pull=false
+  run:build:debian-ntfy "$@"  --pull=false
+  # human
+  run:build:debian-interactive "$@" --pull=false
   run:build:debian-nushell "$@"  --pull=false
   run:build:debian-nix "$@"  --pull=false
   run:build:debian-zsh "$@"  --pull=false
 }
 
+# This is more a build base, than a base base
 run:build:debian-base(){
   cd "$rundir"/debian-base
   docker build \
-   -t "${IMAGE_REPO}/debian-base:12" \
-   -t "${IMAGE_REPO}/debian-base:latest" \
-   -t "${IMAGE_REPO}/debian:latest" \
+   --tag "${IMAGE_REPO}/debian-base:12" \
+   --tag "${IMAGE_REPO}/debian-base:latest" \
+   --tag "${IMAGE_REPO}/debian:latest" \
    . "$@"    
 }
 
 run:build:debian-interactive(){
   cd "$rundir"/debian-interactive
   docker build \
-   -t "${IMAGE_REPO}/debian-interactive:12" \
-   -t "${IMAGE_REPO}/debian-interactive:latest" \
-   -t "debi" \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --tag "${IMAGE_REPO}/debian-interactive:12" \
+   --tag "${IMAGE_REPO}/debian-interactive:latest" \
+   --tag "debi" \
    . "$@"
 }
 run:build:debian-nix () {
   cd "$rundir"/debian-nix
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "NIX_VERSION=${NIX_VERSION}"\
    --build-arg "NIX_VERSION_SHA=${NIX_VERSION_SHA}"\
    --tag "${IMAGE_REPO}/debian-nix:12" \
@@ -148,11 +207,16 @@ run:build:debian-nix () {
 }
 run:build:debian-zsh () {
   cd "$rundir"/debian-zsh
-  docker build -t "${IMAGE_REPO}/debian-zsh:12" -t "${IMAGE_REPO}/debian-zsh:latest" .
+  docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --tag "${IMAGE_REPO}/debian-zsh:12" \
+   --tag "${IMAGE_REPO}/debian-zsh:latest" \
+   . "$@"
 }
 run:build:debian-deno () {
   cd "$rundir"/debian-deno
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "DENO_VERSION=${DENO_VERSION}" \
    --tag "${IMAGE_REPO}/debian-deno:12" \
    --tag "${IMAGE_REPO}/debian-deno:latest" \
@@ -161,56 +225,114 @@ run:build:debian-deno () {
 run:build:debian-node () {
   cd "$rundir"/debian-node
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg NODE_VERSION="${NODE_VERSION}" \
    --tag "${IMAGE_REPO}/debian-node:20" \
    --tag "${IMAGE_REPO}/debian-node:latest" \
    . "$@"
   #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
 }
+run:build:debian-php () {
+  cd "$rundir"/debian-php
+  docker build \
+   --tag "${IMAGE_REPO}/debian-php:8.2" \
+   --tag "${IMAGE_REPO}/debian-php:latest" \
+   -f Dockerfile-8.2 \
+   . "$@"
+  #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
+}
+run:build:debian-php-7-4 () {
+  cd "$rundir"/debian-php
+  docker build \
+   --tag "${IMAGE_REPO}/debian-php:7.4" \
+   -f Dockerfile-7.4 \
+   . "$@"
+  #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
+}
 run:build:debian-ntfy () {
   cd "$rundir"/debian-ntfy
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "NTFY_VERSION=${NTFY_VERSION}" \
-   -t "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" \
+   --tag "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" \
    . "$@"
 }
 run:build:debian-commafeed () {
   cd "$rundir"/debian-commafeed
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "COMMAFEED_VERSION=${COMMAFEED_VERSION}" \
-   -t "${IMAGE_REPO}/commafeed:${COMMAFEED_VERSION}" \
+   --tag "${IMAGE_REPO}/commafeed:${COMMAFEED_VERSION}" \
    . "$@"
 }
 run:build:debian-nushell () {
   cd "$rundir"/debian-nushell
   docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "NUSHELL_VERSION=${NUSHELL_VERSION}" \
-   -t "${IMAGE_REPO}/nushell:${NUSHELL_VERSION}" \
+   --tag "${IMAGE_REPO}/nushell:${NUSHELL_VERSION}" \
    . "$@"
 }
+run:build:debian-vscode-reh(){
+  cd "$rundir"/debian-vscode-reh
+  docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --build-arg "VSCODE_COMMIT=${VSCODE_COMMIT}" \
+   --tag "${IMAGE_REPO}/vscode-reh:${VSCODE_COMMIT}" \
+   . "$@"
+}
+run:build:debian-vscode-reh:extend(){
+  local extend_repo="$1"
+  local extend_tag="$2"
+  cd "$rundir"/debian-vscode-reh
+  docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --build-arg "VSCODE_COMMIT=${VSCODE_COMMIT}" \
+   --build-arg "EXTEND_IMAGE_REPO_TAG=${extend_repo}:${extend_tag}" \
+   --tag "${extend_repo}:${extend_tag}-vscode" \
+   -f Dockerfile.extend \
+   . "${@:3}"
+}
+run:build:debian-vscodium-reh(){
+  cd "$rundir"/debian-vscodium-reh
+  docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --build-arg "VSCODIUM_VERSION=${VSCODIUM_VERSION}" \
+   --tag "${IMAGE_REPO}/vscodium-reh:${VSCODIUM_VERSION}" \
+   . "$@"
+}
+run:build:debian-vscodium-reh:extend(){
+  local extend_repo="$1"
+  local extend_tag="$2"
+  cd "$rundir"/debian-vscodium-reh
+  docker build \
+   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
+   --build-arg "VSCODIUM_VERSION=${VSCODIUM_VERSION}" \
+   --build-arg "EXTEND_IMAGE_REPO_TAG=${extend_repo}:${extend_tag}" \
+   --tag "${extend_repo}:${extend_tag}-vscodium" \
+   -f Dockerfile.extend \
+   . "${@:3}"
+}
+
 run:run:debian-base(){
   local type_name="$1"
-  shift
   docker run \
    --interactive i\
    --tty \
    --rm \
    "${IMAGE_REPO}/debian-${type_name}:latest" \
-   "$@"
+   "${@:2}"
 }
 
 run:debian(){
   run:run:debian-base interactive "$@"
 }
-
 run:nix(){
   run:run:debian-base nix "$@"
 }
-
 run:zsh(){
   run:run:debian-base zsh "$@"
 }
-
 run:deno(){
   run:run:debian-base deno "$@"
 }
@@ -241,8 +363,6 @@ run:help(){
   exit 1
 }
 [ -z "${1:-}" ] && run:help
-cmd=$1
-shift
-[[ "$cmd" == completion:* ]] || set -x
-run:"$cmd" "$@"
+[ "${1:11}" = "completion:" ] || set -x
+run:"${1}" "${@:2}"
 

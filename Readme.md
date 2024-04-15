@@ -17,32 +17,39 @@ Build with
 
 Creates the following tags
 ```
-me/debian
 me/debian-base:12         me/debian-base:latest
+
+me/debian-deno:12         me/debian-deno:latest 
+me/debian-node:20         me/debian-node:latest 
+me/debian-php:8.2         me/debian-php:latest 
+me/debian-php:7.4
+mh/vscode-reh:COMMIT_SHA
+mh/vscodium-reh:VERSION
 
 debi
 me/debian-interactive:12  me/debian-interactive:latest
-
 me/debian-nix:12          me/debian-nix:latest
-
 me/debian-zsh:12          me/debian-zsh:latest
-
-me/debian-deno:12         me/debian-deno:latest 
-
-me/debian-node:18         me/debian-node:latest 
-
-me/ntfy:n.n.n             me/ntfy:latest 
-
-me/commafeed:n.n.n        me/commafeed:latest 
-
 me/nushell:n.n.n          me/nushell:latest
+me/ntfy:n.n.n             me/ntfy:latest 
+me/commafeed:n.n.n        me/commafeed:latest 
 ```
 
-Version at #714c3ca1
+## vscode/vscodium Remote Extension Host
 
-- node 20.12.0
-- deno 1.42.0
-- ntfy 2.10.0
-- commafeed 4.3.3
-- nushell 0.91.0
-- nix 2.21.1
+node,php,golang build additional images with the vscode remote extensions hosts embedded for development
+
+
+## Versions at #305d9d0b
+
+```
+NODE_VERSION="20.12.2"
+DENO_VERSION="1.42.3"
+NTFY_VERSION="2.10.0"
+GO_VERSION="1.22"
+COMMAFEED_VERSION="4.3.3"
+NUSHELL_VERSION="0.92.2"
+VSCODE_COMMIT="e170252f762678dec6ca2cc69aba1570769a5d39"
+VSCODIUM_VERSION="1.88.1.24104"
+NIX_VERSION="2.21.2"
+```

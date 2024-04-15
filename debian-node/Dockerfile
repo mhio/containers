@@ -1,4 +1,5 @@
-FROM me/debian-base:12 AS install
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-base:12 AS install
 SHELL [ "/bin/sh", "-uexc" ]
 
 ARG NODE_VERSION
@@ -15,11 +16,13 @@ RUN label="node-v${NODE_VERSION}-linux-x64"; \
 #RUN apt-get update -qy; \
 #    apt-get install openssl ca-certificates;
 
-#FROM me/debian-base:12
+
+#ARG IMAGE_REPO
+#FROM ${IMAGE_REPO}/debian-base:12
 #COPY --from=install "/build/node" /usr/local
+
 
 FROM gcr.io/distroless/cc-debian12:latest
 COPY --from=install "/build/node" /usr/local
 RUN [ "/usr/local/bin/node", "--eval", "console.log(process.version); process.exit()" ]
 #ENTRYPOINT [ "/usr/local/bin/node" ]
-

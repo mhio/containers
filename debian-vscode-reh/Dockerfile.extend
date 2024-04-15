@@ -1,0 +1,9 @@
+ARG IMAGE_REPO
+ARG VSCODE_COMMIT
+ARG EXTEND_IMAGE_REPO_TAG
+
+FROM ${IMAGE_REPO}/vscode-reh:${VSCODE_COMMIT} as vscode
+
+ARG EXTEND_IMAGE_REPO_TAG
+FROM ${EXTEND_IMAGE_REPO_TAG}
+COPY --from=vscode /usr/local/vscode-server /usr/local/vscode-server

@@ -1,4 +1,5 @@
-FROM me/debian-base:12 AS install
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-base:12 AS install
 WORKDIR /install
 ARG NTFY_VERSION
 RUN set -uex; \
@@ -8,6 +9,9 @@ RUN set -uex; \
     tar zxvf "${file_name}"; \
     rm "${file_name}"; \
     mv "${file_label}" "ntfy";
+
+
+# Output
 
 #FROM docker.io/debian:12-slim
 FROM gcr.io/distroless/cc-debian12:latest

@@ -1,4 +1,5 @@
-FROM me/debian-base:12 AS install
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-base:12 AS install
 SHELL [ "/bin/sh", "-uexc" ]
 
 ARG COMMAFEED_VERSION
@@ -9,6 +10,9 @@ RUN file_name="commafeed.jar"; \
     ls -al /build;\
     echo done;
 
+
+# Output
+
 FROM gcr.io/distroless/java21-debian12:latest
 WORKDIR /app
 COPY --from=install "/build/commafeed.jar" "/build/config.yml" /app/
@@ -16,4 +20,3 @@ ENTRYPOINT []
 VOLUME /commafeed/data
 EXPOSE 8082
 CMD [ "/usr/bin/java", "-Djava.net.preferIPv4Stack=true", "-jar", "/app/commafeed.jar", "server", "/app/config.yml" ]
-

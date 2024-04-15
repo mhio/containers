@@ -1,0 +1,4 @@
+FROM me/debian-base:latest
+RUN set -uex;\
+    apt-get update -qy;\
+    apt-get install php -qy;

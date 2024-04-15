@@ -1,0 +1,9 @@
+ARG IMAGE_REPO
+ARG VSCODIUM_VERSION
+ARG EXTEND_IMAGE_REPO_TAG
+
+FROM ${IMAGE_REPO}/vscodium-reh:${VSCODIUM_VERSION} as vscodium
+
+ARG EXTEND_IMAGE_REPO_TAG
+FROM ${EXTEND_IMAGE_REPO_TAG}
+COPY --from=vscodium /usr/local/vscodium-server /usr/local/vscodium-server

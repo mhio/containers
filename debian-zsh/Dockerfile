@@ -1,4 +1,5 @@
-FROM me/debian-interactive:12
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-interactive:12
 
 RUN set -uex;\
     apt-get update;\

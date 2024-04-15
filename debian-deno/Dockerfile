@@ -1,4 +1,6 @@
-FROM me/debian-base:12 AS install
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-base:12 AS install
+
 ARG DENO_VERSION
 RUN set -uex;\
     apt-get -qy update;\
@@ -17,4 +19,3 @@ COPY --from=install /deno /deno
 RUN [ "/deno", "repl", "--eval", "close()" ]
 ENTRYPOINT [ "/deno" ]
 CMD [ "repl" ]
-

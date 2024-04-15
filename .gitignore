@@ -2,3 +2,5 @@ workdir/
 .tmp*
 .DS_Store
 
+
+.local-versions
