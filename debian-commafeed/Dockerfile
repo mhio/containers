@@ -9,7 +9,7 @@ RUN file_name="commafeed.jar"; \
     ls -al /build;\
     echo done;
 
-FROM gcr.io/distroless/java17-debian12:latest
+FROM gcr.io/distroless/java21-debian12:latest
 WORKDIR /app
 COPY --from=install "/build/commafeed.jar" "/build/config.yml" /app/
 ENTRYPOINT []
