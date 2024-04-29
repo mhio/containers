@@ -152,7 +152,15 @@ run:build:deps(){
   docker pull "docker.io/golang:$GO_VERSION"
 }
 run:build:containers(){
+  run:build:containers:base
+  run:build:containers:lang
+  run:build:containers:app
+  run:build:containers:human
+}
+run:build:containers:base(){
   run:build:debian-base "$@"
+}
+run:build:containers:lang(){
   # lang
   run:build:debian-deno "$@"  --pull=false
   run:build:debian-node "$@"  --pull=false
@@ -166,9 +174,13 @@ run:build:containers(){
   run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-php" "7.4" "$@"  --pull=false
   run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-node" "20" "$@"  --pull=false
   run:build:debian-vscode-reh:extend "docker.io/golang" "$GO_VERSION" "$@"  --pull=false
+}
+run:build:containers:app(){
   # app
   run:build:debian-commafeed "$@"  --pull=false
   run:build:debian-ntfy "$@"  --pull=false
+}
+run:build:containers:human(){
   # human
   run:build:debian-interactive "$@" --pull=false
   run:build:debian-nushell "$@"  --pull=false
