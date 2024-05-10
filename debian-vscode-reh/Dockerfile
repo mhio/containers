@@ -20,11 +20,18 @@ ARG IMAGE_REPO
 FROM docker.io/debian:12-slim
 
 ARG VSCODE_ARCH=x64
+ARG UID=500
 
 COPY --from=install /build/vscode-server-linux-${VSCODE_ARCH} /usr/local/vscode-server-linux-${VSCODE_ARCH}
-RUN cd /usr/local/ && ln -vs vscode-server-linux-${VSCODE_ARCH} vscode-server
+RUN set -uex;\
+    cd /usr/local/;\
+    ln -vs vscode-server-linux-${VSCODE_ARCH} vscode-server;\
+    mkdir /user;\
+    chown "${UID}" /user;
 RUN find /usr/local/vscodium-server-linux-${VSCODE_ARCH} | sort
 RUN [ "/usr/local/vscode-server/bin/code-server", "--help"]
 
-ENTRYPOINT [ "/usr/local/vscode-server/bin/code-server", "--accept-server-license-terms",  "--telemetry-level", "off" ]
+USER ${UID}
+
+ENTRYPOINT [ "/usr/local/vscode-server/bin/code-server", "--accept-server-license-terms",  "--telemetry-level=off", "--server-data-dir=/user", "--user-data-dir=/user", "--host=0.0.0.0" ]
 CMD []

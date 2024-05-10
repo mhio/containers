@@ -1,0 +1,9 @@
+# distromore
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-node:build as build
+
+ARG IMAGE_REPO
+FROM ${IMAGE_REPO}/debian-base:12
+COPY --from=build "/build/node" /usr/local
+
+RUN [ "/usr/local/bin/node", "--eval", "console.log(process.version); process.exit()" ]
