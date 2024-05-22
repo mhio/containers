@@ -21,13 +21,16 @@ RUN mkdir "vscodium-server-linux-${VSCODIUM_ARCH}";\
 
 # Output
 
-ARG IMAGE_REPO
 FROM docker.io/debian:12-slim
 
 ARG VSCODIUM_ARCH=x64
+ARG UID=500
 
 COPY --from=install /build/vscodium-server-linux-${VSCODIUM_ARCH}/ /usr/local/vscodium-server-linux-${VSCODIUM_ARCH}
 RUN cd /usr/local/ && ln -vs vscodium-server-linux-${VSCODIUM_ARCH} vscodium-server
+RUN set -uex;\
+    mkdir /user;\
+    chown "${UID}" /user;
 RUN find /usr/local/vscodium-server-linux-${VSCODIUM_ARCH} | sort
 RUN /usr/local/vscodium-server-linux-${VSCODIUM_ARCH}/bin/codium-server --help
 RUN /usr/local/vscodium-server/bin/codium-server --help
