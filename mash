@@ -16,8 +16,8 @@ else
 # begin--versions
 NODE_VERSION="20.13.1"
 GO_VERSION="1.21.8"
-DENO_VERSION="1.43.1"
-NTFY_VERSION="2.10.0"
+DENO_VERSION="1.43.6"
+NTFY_VERSION="2.11.0"
 COMMAFEED_VERSION="4.4.0"
 NUSHELL_VERSION="0.93.0"
 VSCODE_COMMIT="e170252f762678dec6ca2cc69aba1570769a5d39"
@@ -154,10 +154,10 @@ run:build:deps(){
   docker pull "docker.io/golang:$GO_VERSION"
 }
 run:build:containers(){
-  run:build:containers:base
-  run:build:containers:lang
-  run:build:containers:app
-  run:build:containers:human
+  run:build:containers:base "$@"
+  run:build:containers:lang "$@"
+  run:build:containers:app "$@"
+  run:build:containers:human "$@"
 }
 run:build:containers:base(){
   run:build:debian-base "$@"
@@ -316,6 +316,7 @@ run:build:debian-vscode-reh:extend(){
   local extend_tag="$2"
   cd "$rundir"/debian-vscode-reh
   docker build \
+   --pull=false \
    --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "VSCODE_COMMIT=${VSCODE_COMMIT}" \
    --build-arg "EXTEND_IMAGE_REPO_TAG=${extend_repo}:${extend_tag}" \
@@ -336,6 +337,7 @@ run:build:debian-vscodium-reh:extend(){
   local extend_tag="$2"
   cd "$rundir"/debian-vscodium-reh
   docker build \
+   --pull=false \
    --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
    --build-arg "VSCODIUM_VERSION=${VSCODIUM_VERSION}" \
    --build-arg "EXTEND_IMAGE_REPO_TAG=${extend_repo}:${extend_tag}" \
