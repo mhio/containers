@@ -16,12 +16,12 @@ else
 # begin--versions
 NODE_VERSION="20.14.0"
 GO_VERSION="1.21.8"
-DENO_VERSION="1.44.0"
+DENO_VERSION="1.44.1"
 NTFY_VERSION="2.11.0"
 COMMAFEED_VERSION="4.4.0"
-NUSHELL_VERSION="0.94.1"
-VSCODE_COMMIT="e170252f762678dec6ca2cc69aba1570769a5d39"
-VSCODIUM_VERSION="1.89.0.24127"
+NUSHELL_VERSION="0.94.2"
+VSCODE_COMMIT="89de5a8d4d6205e5b11647eb6a74844ca23d2573"
+VSCODIUM_VERSION="1.90.0.24158"
 NIX_VERSION="2.22.1"
 NIX_VERSION_SHA="0a0f8380a581c98bc813e31b6b38ecbca075ef6be2c90b8da6c89766a7cd501d"
 # end--versions
@@ -84,7 +84,7 @@ run:getReleases(){
   vscode_latest="$(getGithubRepoReleaseCommits microsoft/vscode)"
   printf "$format" "vscode" "$vscode_latest" "$VSCODE_COMMIT"
   vscodium_latest="$(getGithubRepoReleaseVersions VSCodium/vscodium)"
-  printf "$format" "vscode" "$vscodium_latest" "$VSCODIUM_VERSION"
+  printf "$format" "codium" "$vscodium_latest" "$VSCODIUM_VERSION"
   nix_latest="$(curl -sfS 'https://nix-releases.s3.amazonaws.com/?delimiter=/&prefix=nix/' \
     | xpath -q -e '//ListBucketResult/CommonPrefixes/Prefix/text()' \
     | sort --version-sort \
