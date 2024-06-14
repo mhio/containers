@@ -7,7 +7,7 @@ WORKDIR /build
 RUN label="node-v${NODE_VERSION}-linux-x64"; \
     file="${label}.tar.xz"; \
     echo $file; \
-    curl -sSfLl "https://nodejs.org/download/release/v${NODE_VERSION}/${file}" > "${file}"; \
+    curl -SfLlo "${file}" "https://nodejs.org/download/release/v${NODE_VERSION}/${file}"; \
     sha256sum "$file"; \
     tar -xvf "$file"; \
     rm "$file"; \
