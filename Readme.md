@@ -7,8 +7,6 @@ Builds debian 12 based containers.
 [nix](https://nixos.org/),
 [zsh](https://www.zsh.org/),
 [Nushell](https://github.com/nushell/nushell),
-[ntfy](https://github.com/binwiederhier/ntfy),
-[Commafeed](https://github.com/Athou/commafeed)
 
 Build with
 ```
@@ -31,8 +29,6 @@ me/debian-interactive:12  me/debian-interactive:latest
 me/debian-nix:12          me/debian-nix:latest
 me/debian-zsh:12          me/debian-zsh:latest
 me/nushell:n.n.n          me/nushell:latest
-me/ntfy:n.n.n             me/ntfy:latest 
-me/commafeed:n.n.n        me/commafeed:latest 
 ```
 
 ## vscode/vscodium Remote Extension Host
@@ -45,11 +41,9 @@ node,php,golang build additional images with the vscode remote extensions hosts 
 ```
 NODE_VERSION="20.12.2"
 DENO_VERSION="1.42.3"
-NTFY_VERSION="2.10.0"
 GO_VERSION="1.22"
-COMMAFEED_VERSION="4.3.3"
-NUSHELL_VERSION="0.92.2"
 VSCODE_COMMIT="e170252f762678dec6ca2cc69aba1570769a5d39"
 VSCODIUM_VERSION="1.88.1.24104"
+NUSHELL_VERSION="0.92.2"
 NIX_VERSION="2.21.2"
 ```

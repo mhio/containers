@@ -17,8 +17,6 @@ else
 NODE_VERSION="20.14.0"
 GO_VERSION="1.21.8"
 DENO_VERSION="1.44.1"
-NTFY_VERSION="2.11.0"
-COMMAFEED_VERSION="4.4.0"
 NUSHELL_VERSION="0.94.2"
 VSCODE_COMMIT="89de5a8d4d6205e5b11647eb6a74844ca23d2573"
 VSCODIUM_VERSION="1.90.0.24158"
@@ -75,10 +73,6 @@ run:getReleases(){
   #printf "$format" "golang 1.22" "$golang_latest" "$GO_VERSION"
   deno_latest="$(getGithubRepoReleaseVersions denoland/deno)"
   printf "$format" "deno" "$deno_latest" "$DENO_VERSION"
-  ntfy_latest="$(getGithubRepoReleaseVersions binwiederhier/ntfy)"
-  printf "$format" "ntfy" "$ntfy_latest" "$NTFY_VERSION"
-  commafeed_latest="$(getGithubRepoReleaseLatest "Athou/commafeed" | jq -r '.name' | removeLeadingTexts "CommaFeed ")"
-  printf "$format" "commafeed" "$commafeed_latest" "$COMMAFEED_VERSION"
   nushell_latest="$(getGithubRepoReleaseVersions nushell/nushell)"
   printf "$format" "nushell" "$nushell_latest" "$NUSHELL_VERSION"
   vscode_latest="$(getGithubRepoReleaseCommits microsoft/vscode)"
@@ -93,8 +87,6 @@ run:getReleases(){
   printf "$format" "nix" "$nix_latest_version_only" "$NIX_VERSION"
   if [ "$node_20" != "$NODE_VERSION" ] \
      || [ "$deno_latest" != "$DENO_VERSION" ] \
-     || [ "$ntfy_latest" != "$NTFY_VERSION" ] \
-     || [ "$commafeed_latest" != "$COMMAFEED_VERSION" ] \
      || [ "$nushell_latest" != "$NUSHELL_VERSION" ] \
      || [ "$vscode_latest" != "$VSCODE_COMMIT" ] \
      || [ "$vscodium_latest" != "$VSCODIUM_VERSION" ] \
@@ -105,8 +97,6 @@ run:getReleases(){
     (
       printf '%s="%s"\n' "NODE_VERSION" "$(removeLeadingV "$node_20")"
       printf '%s="%s"\n' "DENO_VERSION" "$deno_latest"
-      printf '%s="%s"\n' "NTFY_VERSION" "$ntfy_latest"
-      printf '%s="%s"\n' "COMMAFEED_VERSION" "$commafeed_latest"
       printf '%s="%s"\n' "NUSHELL_VERSION" "$nushell_latest"
       printf '%s="%s"\n' "VSCODE_COMMIT" "$vscode_latest"
       printf '%s="%s"\n' "VSCODIUM_VERSION" "$vscodium_latest"
@@ -156,7 +146,6 @@ run:build:deps(){
 run:build:containers(){
   run:build:containers:base "$@"
   run:build:containers:lang "$@"
-  run:build:containers:app "$@"
   run:build:containers:human "$@"
 }
 run:build:containers:base(){
@@ -178,11 +167,6 @@ run:build:containers:lang(){
   run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-php" "8.2" "$@"  --pull=false
   run:build:debian-vscode-reh:extend "${IMAGE_REPO}/debian-node" "20-debian" "$@"  --pull=false
   run:build:debian-vscode-reh:extend "docker.io/golang" "$GO_VERSION" "$@"  --pull=false
-}
-run:build:containers:app(){
-  # app
-  run:build:debian-commafeed "$@"  --pull=false
-  run:build:debian-ntfy "$@"  --pull=false
 }
 run:build:containers:human(){
   # human
@@ -278,22 +262,6 @@ run:build:debian-php-7-4 () {
    -f Dockerfile-7.4 \
    . "$@"
   #docker run --rm "${IMAGE_REPO}/debian-node:18" -e 'console.log(JSON.stringify({yay:"ok"})); process.exit(0)'
-}
-run:build:debian-ntfy () {
-  cd "$rundir"/debian-ntfy
-  docker build \
-   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
-   --build-arg "NTFY_VERSION=${NTFY_VERSION}" \
-   --tag "${IMAGE_REPO}/ntfy:${NTFY_VERSION}" \
-   . "$@"
-}
-run:build:debian-commafeed () {
-  cd "$rundir"/debian-commafeed
-  docker build \
-   --build-arg "IMAGE_REPO=${IMAGE_REPO}" \
-   --build-arg "COMMAFEED_VERSION=${COMMAFEED_VERSION}" \
-   --tag "${IMAGE_REPO}/commafeed:${COMMAFEED_VERSION}" \
-   . "$@"
 }
 run:build:debian-nushell () {
   cd "$rundir"/debian-nushell
